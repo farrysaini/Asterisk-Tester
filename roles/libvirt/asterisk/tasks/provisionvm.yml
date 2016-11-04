@@ -1,0 +1,14 @@
+- name: Define asterisk virtual machines
+  virt:
+    name: "{{ item.name }}"
+    command: define
+    xml: "{{ lookup('template', 'asteriskvm.xml.j2') }}"
+    uri: "{{ libvirt_uri }}"
+
+
+- name: Start asterisk virtual machines
+  virt:
+    name: "{{ item.name }}"
+    command: start
+    state: running
+    uri: "{{ libvirt_uri }}"

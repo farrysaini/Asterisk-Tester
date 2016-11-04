@@ -1,0 +1,11 @@
+---
+# defaults file for libvirt
+enable_vnc_console: true
+# Which libvirt session should we use?  Using `qemu://session` does
+# not require privileged access (but does require the setup performed by the
+# `environment/setup` role).
+libvirt_uri: qemu:///session
+libvirt_domain_type: kvm
+libvirt_diskdev: vda
+libvirt_diskbus: virtio
+libvirt_arch: x86_64

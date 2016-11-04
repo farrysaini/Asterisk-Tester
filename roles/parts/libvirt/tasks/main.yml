@@ -1,0 +1,42 @@
+# We have identified this specific ipxe-roms-qemu-20130517 as having issues w/ timeouts. It is possible
+# that a virthost has a later valid version of ipxe-roms-qemu that will work.  At this time, let's only
+# remove the known bad version of ipxe-roms if it's found
+- name: Check for older iPXE rpm
+  shell: >
+    if rpm -q ipxe-roms-qemu-20130517; then
+       rpm -e --nodeps ipxe-roms-qemu-20130517 && echo "rpm removed";
+    fi;
+  become: true
+  register: old_ipxe
+  changed_when: '"rpm removed" in old_ipxe.stdout'
+
+# WORKAROUND for CentOS and RHEL virthosts.
+# Note, this is *only* installed on the virthost.
+# The iPXE ROMs shipped with CentOS/RHEL are too old to work with Ironic.
+# RHEL BZ: https://bugzilla.redhat.com/show_bug.cgi?id=1267030
+
+# package/yum state: latest does not work with urls
+# We don't want to force install the package because there may already be an appropriate package installed locally.
+- name: If ipxe-roms-qemu is not installed, install a known good version
+  package:
+    name: "http://buildlogs.centos.org/centos/7/cloud/x86_64/openstack-newton/common/ipxe-roms-qemu-20160127-1.git6366fa7a.el7.noarch.rpm"
+    state: present
+  become: true
+
+# Install the packages required for our desired libvirt environment.
+# We store the list of packages in `libvirt_packages` so that in
+# theory we can support multiple distributions simply by passing in a
+# different list of packages.
+- name: Install packages for libvirt
+  package:
+    name: "{{ item }}"
+    state: present
+  with_items: "{{ libvirt_packages }}"
+  become: true
+
+- name: Start libvirtd
+  service:
+    name: "{{ libvirtd_service }}"
+    state: running
+    enabled: true
+  become: true

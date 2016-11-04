@@ -1,0 +1,39 @@
+
+#Describe our virtual networks.  These networks will be attached to
+# the undercloud node and to the overcloud nodes (except for the
+# "external" network) in the order in which they are defined.  The
+# playbooks expect to find both an "external" network and a
+# "overcloud" network.
+
+local_image_dir: "./images"
+remote_image_dir: "~/scenario"
+flavors:
+  small:
+    memory: 2048
+    disk: 10
+    vcpu: 1
+
+asterisk_nodes: 
+  - name: asterisk_1
+    flavor: small
+  - name: asterisk_2
+    flavor: small
+
+sipp_nodes:
+  - name: sipp_1
+    flavor: small
+
+external_network_cidr: 192.168.23.0/24
+networks:
+  - name: testnet
+    bridge: brext
+    forward_mode: nat
+    address: "{{ external_network_cidr|nthhost(1) }}"
+    netmask: "{{ external_network_cidr|ipaddr('netmask') }}"
+    dhcp_range:
+      - "{{ external_network_cidr|nthhost(10) }}"
+      - "{{ external_network_cidr|nthhost(50) }}"
+    nat_port_range:
+      - 1024
+      - 65535
+

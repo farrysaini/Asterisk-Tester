@@ -1,0 +1,24 @@
+---
+- name: Teardown environment
+  hosts: testmachines
+  tags:
+      - teardown
+  roles:
+      - environment/teardown
+
+- name: Install libvirt packages and configure networks
+  hosts: testmachines 
+  gather_facts: yes
+  tags:
+      - setup
+  roles:
+      - environment/setup
+
+- name: Provision asterisk virtual machines from images
+  hosts: testmachines
+  gather_facts: yes
+  tags:
+      - setup
+      - createast
+  roles:
+      - libvirt/asterisk 
