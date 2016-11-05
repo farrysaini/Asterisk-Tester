@@ -1,0 +1,68 @@
+- name: Define virtual machine "{{ item.name }}"
+  virt:
+    name: "{{ item.name }}"
+    command: define
+    xml: "{{ lookup('template', 'virtual_machine.xml.j2') }}"
+    uri: "{{ libvirt_uri }}"
+
+
+- name: Start virtual machine "{{ item.name }}"
+  virt:
+    name: "{{ item.name }}"
+    command: start
+    state: running
+    uri: "{{ libvirt_uri }}"
+
+- name: Configure virtual machines "{{ item.name }}" to start at host boot
+  virt:
+    name: "{{ item.name }}"
+    command: autostart
+    uri: "{{ libvirt_uri }}"
+
+- name: Get virtual machine "{{ item.name }}" ip address
+  script: "{{ role_path }}/scripts/get-vm-ip.sh {{ item.name }}"
+  register: vm_ip_result
+  until: vm_ip_result|success
+  retries: "{{ ip_retries }}"
+  delay: 10
+  environment:
+    LIBVIRT_DEFAULT_URI: "{{ libvirt_uri }}"
+
+- name: Set_fact for virtual machine ip
+  set_fact:
+    vm_ip: "{{ vm_ip_result.stdout_lines[0] }}"
+
+- name: Wait until ssh is available on "{{ item.name }}"
+  wait_for:
+    host: "{{ vm_ip }}"
+    state: started
+    port: 22
+    timeout: 300
+
+- name: Add "{{ item.name }}" to inventory
+  add_host:
+    name: "{{ item.name }}"
+    groups: "{{ item.flavor }}"
+    ansible_host: "{{ item.name }}"
+    ansible_fqdn: "{{ item.name }}"
+    ansible_user: "{{ flavors[item.flavor].user }}"
+    ansible_ssh_pass: "{{ flavors[item.flavor].password }}"
+    ansible_become_pass: "{{ flavors[item.flavor].sudo_password }}"
+    asterisk_ip: "{{ vm_ip }}"
+
+- when: enable_vnc_console and start_remote_display
+  block:
+    
+    - name: Get vnc port for the domain
+      shell: >
+        virsh vncdisplay "{{ item.name }}" | sed -e 's/^.*://'
+      ignore_errors: true
+      register: vnc_port
+
+# TODO: Check and install vnc packages on localhost and add iptable rules on remote 
+
+    - name: Start VNC on localhost
+      delegate_to: localhost
+      shell: >
+        vncviewer {{ ansible_default_ipv4.address }}:{{ vnc_port.stdout | int + 5900 }}&
+

@@ -14,11 +14,21 @@
   roles:
       - environment/setup
 
+- name: Teardown asterisk virtual machines
+  hosts: testmachines
+  gather_facts: yes
+  tags:
+      - teardown
+  roles:
+      - libvirt/teardown
+
 - name: Provision asterisk virtual machines from images
   hosts: testmachines
+  vars_files:
+    - ./vars.yml
   gather_facts: yes
   tags:
       - setup
       - createast
   roles:
-      - libvirt/asterisk 
+      - libvirt/setup 

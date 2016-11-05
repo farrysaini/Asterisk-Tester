@@ -1,0 +1,39 @@
+- name: Check if libvirt is available
+  command: >
+    virsh uri
+  ignore_errors: true
+  changed_when: false
+  register: libvirt_check
+  environment:
+    LIBVIRT_DEFAULT_URI: "{{ libvirt_uri }}"
+
+- when: libvirt_check|success
+  block:
+    
+    - when: virtual_machines
+      block:
+     
+      - name: Check virtual machines
+        command: >
+          virsh domid "{{ item.name }}"
+        with_items: "{{ virtual_machines }}"
+        ignore_errors: true
+        register: vm_check
+        environment:
+          LIBVIRT_DEFAULT_URI: "{{ libvirt_uri }}"
+
+      - name: Destroy virtual machines 
+        command: virsh destroy "{{ item.item.name }}"
+        when: item|success
+        with_items: "{{ vm_check.results }}"
+        ignore_errors: true
+        environment:
+          LIVBIRT_DEFAULT_URI: "{{ libvirt_uri }}"
+
+      - name: Undefine virtual machines
+        command:
+          virsh undefine "{{ item.item.name }}"
+        when: item|success
+        with_items: "{{ vm_check.results}}"
+        environment:
+          LIBVIRT_DEFAULT_URI: "{{ libvirt_uri }}"

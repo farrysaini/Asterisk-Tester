@@ -1,6 +1,9 @@
 ---
 # defaults file for libvirt
 enable_vnc_console: true
+start_remote_display: true
+
+ip_retries: 20
 # Which libvirt session should we use?  Using `qemu://session` does
 # not require privileged access (but does require the setup performed by the
 # `environment/setup` role).

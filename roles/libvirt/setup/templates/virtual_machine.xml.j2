@@ -7,7 +7,7 @@
 
   <os>
     <type arch='{{ libvirt_arch }}'>hvm</type>
-    <boot dev='network'/>
+    <boot dev='hd'/>
     <bootmenu enable='no'/>
   </os>
   <features>
@@ -23,10 +23,10 @@
   <devices>
     <disk type='file' device='disk'>
       <driver name='qemu' type='qcow2' cache='unsafe'/>
-      <source file='/home/ict-admin/scenario/images/asterisk_1.qcow2'/>
+      <source file='{{ remote_working_dir }}/images/{{ flavors[item.flavor].image}}'/>
       <target dev='{{ libvirt_diskdev }}' bus='{{ libvirt_diskbus }}'/>
     </disk>
-{% for network in networks|rejectattr('name', 'equalto', 'external') %}
+{% for network in networks %}
     <interface type='bridge'>
       <mac address='{{ node_mac_map.get(item.name).get(network.name) }}'/>
       <source bridge='{{ network.bridge }}'/>
@@ -38,7 +38,7 @@
 
 {% if enable_vnc_console %}
     <input type='mouse' bus='ps2'/>
-    <graphics type='vnc' port='-1' autoport='yes'/>
+    <graphics type='vnc' port='-1' autoport='yes' listen='0.0.0.0'/>
     <video>
       <model type='cirrus' vram='9216' heads='1'/>
     </video>

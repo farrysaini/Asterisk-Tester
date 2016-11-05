@@ -6,22 +6,25 @@
 # "overcloud" network.
 
 local_image_dir: "./images"
-remote_image_dir: "~/scenario"
+remote_working_dir: "{{ ansible_user_dir }}/scenario"
+
 flavors:
-  small:
+  asterisk:
     memory: 2048
-    disk: 10
     vcpu: 1
+    image: "asterisk.qcow2"
 
-asterisk_nodes: 
+  sipp:
+    memory: 2048
+    vcpu: 1
+    image: "sipp.qcow2"
+
+
+virtual_machines: 
   - name: asterisk_1
-    flavor: small
-  - name: asterisk_2
-    flavor: small
-
-sipp_nodes:
+    flavor: asterisk
   - name: sipp_1
-    flavor: small
+    flavor: sipp
 
 external_network_cidr: 192.168.23.0/24
 networks:
@@ -35,5 +38,4 @@ networks:
       - "{{ external_network_cidr|nthhost(50) }}"
     nat_port_range:
       - 1024
-      - 65535
-
+      - 65535 

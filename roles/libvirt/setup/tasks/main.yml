@@ -1,0 +1,13 @@
+#- name: Ensure that remote images exist 
+#  copy:
+#    src: "{{ local_image_dir }}/"
+#    dest: "{{ remote_working_dir }}/images"
+
+- name: Generate MAC addresses for virtual machines
+  generate_macs:
+    nodes: "{{ virtual_machines }}"
+    networks: "{{ networks }}"
+  register: node_mac_map
+
+- include: provisionvm.yml
+  with_items: "{{ virtual_machines }}"
