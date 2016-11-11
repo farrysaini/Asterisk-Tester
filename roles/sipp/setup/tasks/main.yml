@@ -1,0 +1,13 @@
+- name: Install epel repos
+  become: yes
+  package: name=epel-release state=latest
+  
+- name: Install sipp packages
+  become: yes
+  package: name=sipp state=latest
+
+# Just for test environments. Replace this with command to open sip ports only
+- name: Allow all the traffic to machine
+  become: yes
+  command: >
+    iptables -I INPUT 1 -j ACCEPT  

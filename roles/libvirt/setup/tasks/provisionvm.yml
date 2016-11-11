@@ -1,3 +1,7 @@
+#- name: Copy virtual machine image
+#  command: >
+#    cp "{{ remote_images_dir }}/{{ flavors[item.flavor].image}}" "{{ remote_images_dir}}/{{ item.name}}.qcow2"
+
 - name: Define virtual machine "{{ item.name }}"
   virt:
     name: "{{ item.name }}"
@@ -43,26 +47,34 @@
   add_host:
     name: "{{ item.name }}"
     groups: "{{ item.flavor }}"
-    ansible_host: "{{ item.name }}"
-    ansible_fqdn: "{{ item.name }}"
+    ansible_host: "{{ vm_ip }}"
     ansible_user: "{{ flavors[item.flavor].user }}"
     ansible_ssh_pass: "{{ flavors[item.flavor].password }}"
     ansible_become_pass: "{{ flavors[item.flavor].sudo_password }}"
-    asterisk_ip: "{{ vm_ip }}"
-
+    ansible_ssh_extra_args: '-o "StrictHostKeyChecking no" -o "ProxyCommand ssh -W %h:%p -q ict-admin@10.0.0.10"' 
+    ansible_sftp_extra_args: '-o "StrictHostKeyChecking no" -o "ProxyCommand ssh -W %h:%p -q ict-admin@10.0.0.10"' 
+    ansible_scp_extra_args: '-o "StrictHostKeyChecking no" -o "ProxyCommand ssh -W %h:%p -q ict-admin@10.0.0.10"' 
 - when: enable_vnc_console and start_remote_display
   block:
     
     - name: Get vnc port for the domain
       shell: >
         virsh vncdisplay "{{ item.name }}" | sed -e 's/^.*://'
-      ignore_errors: true
       register: vnc_port
 
-# TODO: Check and install vnc packages on localhost and add iptable rules on remote 
+    - name: Set fact for vnc port
+      set_fact:
+        "vm_vncport": "{{ vnc_port.stdout | int + 5900 }}" 
+    
+    - name: Add iptables rule for vnc port
+      become: yes
+      command: >
+        iptables -I INPUT 1 -p tcp --dport  {{ vm_vncport }} -j ACCEPT
+
+#TODO: Install vnc packages on local host
 
     - name: Start VNC on localhost
       delegate_to: localhost
       shell: >
-        vncviewer {{ ansible_default_ipv4.address }}:{{ vnc_port.stdout | int + 5900 }}&
+        vncviewer "{{ ansible_default_ipv4.address}}:{{vm_vncport }}"&
 

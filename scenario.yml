@@ -3,6 +3,7 @@
   hosts: testmachines
   tags:
       - teardown
+      - teardownenv
   roles:
       - environment/teardown
 
@@ -14,21 +15,47 @@
   roles:
       - environment/setup
 
-- name: Teardown asterisk virtual machines
+- name: Teardown virtual machines
   hosts: testmachines
   gather_facts: yes
   tags:
       - teardown
+      - teardownvms
   roles:
       - libvirt/teardown
 
-- name: Provision asterisk virtual machines from images
+- name: Start virtual machines from images
   hosts: testmachines
-  vars_files:
-    - ./vars.yml
   gather_facts: yes
   tags:
       - setup
-      - createast
+      - createvms
   roles:
-      - libvirt/setup 
+      - libvirt/setup
+
+- name: Provision sipp servers
+  hosts: sipp_server
+  tags:
+    - setup
+    - createvms
+    - provisionsipp
+  roles:
+    - sipp/setup/server
+
+- name: Provision sipp clients
+  hosts: sipp_client
+  tags:
+    - setup
+    - createvms
+    - provisionsipp
+  roles:
+    - sipp/setup/client
+
+- name: Kill SIPP on server and clients
+  hosts: sipp_client,sipp_server
+  tags:
+    - teardown
+    - teardownvms
+    - teardownsipp
+  roles:
+    - sipp/teardown

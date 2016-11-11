@@ -1,0 +1,16 @@
+- name: Get vnc port for the domain
+  shell: >
+    virsh vncdisplay {{ item.name }} | sed -e 's/^.*://'
+  ignore_errors: true
+  register: vnc_port
+
+- name: Set fact for vnc port
+  set_fact:
+    "vm_vncport": " {{ vnc_port.stdout | int + 5900 }} " 
+  ignore_errors: true
+
+- name: Remove iptables rule for vnc port
+  become: yes
+  command: >
+    iptables -D INPUT -p tcp --dport  {{ vm_vncport }} -j ACCEPT
+  ignore_errors: true

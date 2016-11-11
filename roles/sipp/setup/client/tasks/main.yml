@@ -1,0 +1,4 @@
+- name: Start the SIPP client
+  shell: >
+    nohup sipp -sn uac {{ hostvars[item]['ansible_default_ipv4']['address'] }} &
+  with_items: "{{ groups['sipp_server'] }}"

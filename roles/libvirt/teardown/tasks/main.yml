@@ -7,6 +7,9 @@
   environment:
     LIBVIRT_DEFAULT_URI: "{{ libvirt_uri }}"
 
+# TODO: Delete images for virtual machines from remote working directory   
+# TODO: Remove Ip tables rule when tearing down
+
 - when: libvirt_check|success
   block:
     
@@ -21,7 +24,7 @@
         register: vm_check
         environment:
           LIBVIRT_DEFAULT_URI: "{{ libvirt_uri }}"
-
+    
       - name: Destroy virtual machines 
         command: virsh destroy "{{ item.item.name }}"
         when: item|success
@@ -37,3 +40,11 @@
         with_items: "{{ vm_check.results}}"
         environment:
           LIBVIRT_DEFAULT_URI: "{{ libvirt_uri }}"
+
+      - name: Copy the original inventory from .org format 
+        delegate_to: localhost
+        copy: 
+          src: './hosts.org'
+          dest: './hosts'
+
+      - meta: refresh_inventory

@@ -1,0 +1,32 @@
+{% for host in groups['all'] %}
+{% if hostvars[host].get('ansible_connection', '') == 'local' %}
+{{ host }} ansible_connection=local
+{% else %}
+
+{{ host }}{% if 'ansible_host' in hostvars[host]
+%} ansible_host={{ hostvars[host]['ansible_host'] }}{% endif %}
+{% if 'ansible_user' in hostvars[host]
+%} ansible_user={{ hostvars[host]['ansible_user'] }}{% endif %}
+{% if 'ansible_ssh_pass' in hostvars[host]
+%} ansible_ssh_pass={{ hostvars[host]['ansible_ssh_pass'] }}{% endif %}
+{% if 'ansible_become_pass' in hostvars[host]
+%} ansible_become_pass={{ hostvars[host]['ansible_become_pass'] }}{% endif %}
+{% if 'ansible_ssh_extra_args' in hostvars[host]
+%} ansible_ssh_extra_args='{{ hostvars[host]['ansible_ssh_extra_args'] }}'{% endif %}
+{% if 'ansible_sftp_extra_args' in hostvars[host]
+%} ansible_sftp_extra_args='{{ hostvars[host]['ansible_sftp_extra_args'] }}'{% endif %}
+{% if 'ansible_scp_extra_args' in hostvars[host]
+%} ansible_scp_extra_args='{{ hostvars[host]['ansible_scp_extra_args'] }}'{% endif %}
+
+{% endif %}
+{% endfor %}
+
+{% for group in groups %}
+{% if group not in ['ungrouped', 'all'] %}
+[{{ group }}]
+{% for host in groups[group] %}
+{{ host }}
+{% endfor %}
+
+{% endif %}
+{% endfor %}

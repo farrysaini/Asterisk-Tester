@@ -7,29 +7,44 @@
 
 local_image_dir: "./images"
 remote_working_dir: "{{ ansible_user_dir }}/scenario"
-
+remote_images_dir: "{{ remote_working_dir}}/images"
+remote_sipp_dir: "{{remote_working_dir}}/sipp"
+  
 flavors:
   asterisk:
     memory: 2048
     vcpu: 1
     image: "asterisk.qcow2"
-
-  sipp:
+    user: ""
+    password: ""
+    sudo_password: ""
+  sipp_server:
     memory: 2048
     vcpu: 1
     image: "sipp.qcow2"
-
+    user: ""
+    password: ""
+    sudo_password: ""
+  sipp_client:
+    memory: 2048
+    vcpu: 1
+    image: "sipp.qcow2"
+    user: ""
+    password: ""
+    sudo_password: ""
 
 virtual_machines: 
   - name: asterisk_1
     flavor: asterisk
-  - name: sipp_1
-    flavor: sipp
+  - name: sipp_client
+    flavor: sipp_client
+  - name: sipp_server
+    flavor: sipp_server
 
 external_network_cidr: 192.168.23.0/24
 networks:
   - name: testnet
-    bridge: brext
+    bridge: brtest
     forward_mode: nat
     address: "{{ external_network_cidr|nthhost(1) }}"
     netmask: "{{ external_network_cidr|ipaddr('netmask') }}"
@@ -38,4 +53,5 @@ networks:
       - "{{ external_network_cidr|nthhost(50) }}"
     nat_port_range:
       - 1024
-      - 65535 
+      - 65535
+ 

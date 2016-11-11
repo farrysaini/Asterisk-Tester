@@ -1,7 +1,8 @@
+#TODO: Add libvirt volume pool setup
 #- name: Ensure that remote images exist 
 #  copy:
 #    src: "{{ local_image_dir }}/"
-#    dest: "{{ remote_working_dir }}/images"
+#    dest: "{{ remote_images_dir }}"
 
 - name: Generate MAC addresses for virtual machines
   generate_macs:
@@ -11,3 +12,16 @@
 
 - include: provisionvm.yml
   with_items: "{{ virtual_machines }}"
+
+- name: Copy the origional inventory to .org format
+  delegate_to: localhost
+  copy: 
+    src: './hosts'
+    dest: './hosts.org'
+    directory_mode: false
+
+- name: Create new inventory including the provisioned virtual machines 
+  delegate_to: localhost
+  template:
+    src: 'inventory.j2'
+    dest: './hosts'

@@ -1,0 +1,12 @@
+- name: Remove iptables rule pushed by setup
+  become: yes
+  ignore_errors: true
+  command: >
+    iptables -D INPUT -j ACCEPT
+
+# Must use force SIPP won't exit otherwise
+- name: Kill all the SIPP instances on machine
+  ignore_errors: true
+  become: yes
+  shell: >
+    ps aux | kill -9 $(awk '{if($11=="sipp"){print($2)}}') 

@@ -23,7 +23,7 @@
   <devices>
     <disk type='file' device='disk'>
       <driver name='qemu' type='qcow2' cache='unsafe'/>
-      <source file='{{ remote_working_dir }}/images/{{ flavors[item.flavor].image}}'/>
+      <source file='{{ remote_working_dir }}/images/{{ item.name }}.qcow2'/>
       <target dev='{{ libvirt_diskdev }}' bus='{{ libvirt_diskbus }}'/>
     </disk>
 {% for network in networks %}
