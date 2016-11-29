@@ -1,0 +1,10 @@
+- name: Copy Asterisk configuration files
+  become: yes
+  template: src={{ item }} dest=/etc/asterisk/{{ item | basename | regex_replace('\.j2','') }}
+  with_fileglob:
+    "../templates/*.j2"
+
+- name: Reload configurations in Asterisk
+  service:
+    name=asterisk
+    state=restarted

@@ -1,2 +1,4 @@
----
-# defaults file for asterisk
+asterisk_runuser: asteriskpbx
+asterisk_rungroup: asteriskpbx
+asterisk_allow_guests: no
+asterisk_srvlookup: no

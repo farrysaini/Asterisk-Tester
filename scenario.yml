@@ -34,6 +34,7 @@
       - libvirt/setup
 
 - name: Provision sipp servers
+  gather_facts: yes
   hosts: sipp_server
   tags:
     - setup
@@ -42,7 +43,18 @@
   roles:
     - sipp/setup/server
 
+- name: Provision Asterisk proxy
+  gather_facts: yes
+  hosts: asterisk
+  tags:
+    - provisionast
+    - createvms
+    - setup
+  roles:
+    - asterisk/setup
+
 - name: Provision sipp clients
+  gather_facts: yes
   hosts: sipp_client
   tags:
     - setup
@@ -59,3 +71,4 @@
     - teardownsipp
   roles:
     - sipp/teardown
+
