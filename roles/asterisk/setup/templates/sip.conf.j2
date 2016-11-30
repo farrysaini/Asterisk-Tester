@@ -28,11 +28,15 @@ secret=fGjR67JkQ2E
 type=peer
 disallow=all
 allow=ulaw
+context=Customers
+sipdebug={{asterisk_sip_debug}}
 
 [carrier](!)
 type=peer
 disallow=all
 allow=ulaw
+context=Carriers
+sipdebug={{asterisk_sip_debug}}
 
 {% set client_extension=0001 %}
 {% for client in groups['sipp_client'] %}

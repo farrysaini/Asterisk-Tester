@@ -1,0 +1,73 @@
+#!/bin/bash
+{% set args = '' %}
+{% if sipp_trace_msg %}
+{% set args = args + ' -trace_msg' %}	
+{% endif %}
+
+{% if sipp_trace_screen %}
+{% set args = args + ' -trace_screen' %}	
+{% endif %}
+
+{% if sipp_trace_shortmsg %}
+{% set args = args + ' -trace_shortmsg' %}	
+{% endif %}
+
+{% if sipp_trace_errors %}
+{% set args = args + ' -trace_err' %}	
+{% endif %}
+
+{% if sipp_trace_stats %}
+{% set args = args + ' -trace_stat' %}	
+{% endif %}
+
+{% if sipp_trace_counts %}
+{% set args = args + ' -trace_counts' %}	
+{% endif %}
+
+{% if sipp_trace_rtt %}
+{% set args = args + ' -trace_rtt' %}	
+{% endif %}
+
+{% if sipp_trace_logs %}
+{% set args = args + ' -trace_logs' %}	
+{% endif %}
+
+{% if sipp_trace_logs %}
+{% set args = args + ' ' + sipp_extra_args %}	
+{% endif %}
+
+{% if sipp_call_rate  %}
+{% set args = args + ' -r ' + sipp_call_rate|string  %}	
+{% endif %}
+
+{% if sipp_stats_dump_freq %}
+{% set args = args + ' -fd ' + sipp_stats_dump_freq|string  %}	
+{% endif %}
+
+{% if sipp_rate_increase %}
+{% set args = args + ' -rate_increase ' + sipp_rate_increase|string  %}	
+{% endif %}
+
+{% if sipp_rate_max %}
+{% set args = args + ' -rate_max ' + sipp_rate_max|string  %}	
+{% endif %}
+
+{% if sipp_scenario_file %}
+{% set args = args + ' -sf ' + sipp_scenario_file  %}
+{% else %}
+{% set args = args + ' -sn uas ' %}
+{% endif %}
+
+{% if sipp_service %}
+{% set args = args + ' -s ' + sipp_service|string  %}	
+{% endif %}
+
+{% if sipp_local_ip %}
+{% set args = args + ' -i ' + sipp_local_ip  %}	
+{% endif %}
+
+{% if sipp_remote_ip %}
+{% set args = args + ' ' + sipp_remote_ip  %}	
+{% endif %}
+
+sipp {{ args }}

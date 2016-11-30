@@ -1,2 +1,10 @@
----
-# defaults file for client
+sipp_scenario_file: 'uac.xml'
+sipp_extra_args: ''
+sipp_stats_dump_freq: 10
+sipp_rate_increase: 10
+sipp_rate_max: 200
+#Scenario Parameters
+sipp_service: 4035552349
+sipp_local_ip: "{{ ansible_default_ipv4.address }}"
+#Do you really wanna use a hardcoded ip address here? Think later
+sipp_remote_ip: "{{ hostvars['asterisk_1'].ansible_host }}"

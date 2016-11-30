@@ -1,4 +1,17 @@
-- name: Start the SIPP client
-  shell: >
-    nohup sipp -sn uac {{ hostvars[item]['ansible_default_ipv4']['address'] }} &
-  with_items: "{{ groups['sipp_server'] }}"
+- name: Copy SIPP scenario from template
+  template: >
+      src="uac.xml.j2"                
+      dest="{{ sipp_remote_dir }}/uac.xml"
+
+- name: Copy SIPP script from template
+  template: >
+      src="../../templates/sipp.sh.j2" 
+      dest="{{ sipp_remote_dir }}/sipp.sh"
+      mode=750
+
+- name: Run SIPP client script
+  command: '{{sipp_remote_dir}}/sipp.sh'
+  args:
+    chdir: "{{ sipp_remote_dir }}"
+  async: 3600
+  poll: 5

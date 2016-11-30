@@ -10,3 +10,8 @@
   become: yes
   shell: >
     ps aux | kill -9 $(awk '{if($11=="sipp"){print($2)}}') 
+
+- name: Delete the SIPP directory
+  file: >
+    path="{{sipp_remote_dir}}"
+    state='absent'

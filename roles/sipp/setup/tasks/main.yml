@@ -10,4 +10,7 @@
 - name: Allow all the traffic to machine
   become: yes
   command: >
-    iptables -I INPUT 1 -j ACCEPT  
+    iptables -I INPUT 1 -j ACCEPT 
+
+- name: Create SIPP directory
+  file: path="{{ sipp_remote_dir }}" state=directory

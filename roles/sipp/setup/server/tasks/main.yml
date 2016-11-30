@@ -1,3 +1,17 @@
-- name: Start SIPP server
-  shell: >
-    nohup sipp -sn uas & 
+- name: Copy SIPP scenario from template
+  template: >
+      src="uas.xml.j2" 
+      dest="{{ sipp_remote_dir }}/uas.xml"
+      
+- name: Copy SIPP script from template
+  template: >
+      src="../../templates/sipp.sh.j2" 
+      dest="{{ sipp_remote_dir }}/sipp.sh"
+      mode=750
+
+- name: Run SIPP server script
+  command: '{{ sipp_remote_dir}}/sipp.sh'
+  args:
+    chdir: "{{ sipp_remote_dir }}"
+  async: 3600
+  poll: 0

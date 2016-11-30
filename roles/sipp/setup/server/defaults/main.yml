@@ -1,2 +1,7 @@
----
-# defaults file for server
+sipp_trace_logs: yes
+sipp_call_rate: no
+sipp_scenario_file: 'uas.xml'
+sipp_extra_args: ''
+sipp_stats_dump_freq: 10
+sipp_rate_increase: no
+sipp_rate_max: no
