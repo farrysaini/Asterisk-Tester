@@ -6,6 +6,10 @@
   become: yes
   package: name=sipp state=latest
 
+- name: Install dstat packages
+  become: yes
+  package: name=dstat state=latest
+
 # Just for test environments. Replace this with command to open sip ports only
 - name: Allow all the traffic to machine
   become: yes

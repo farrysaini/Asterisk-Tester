@@ -1,0 +1,8 @@
+- src: torian.filebeat
+- src: https://github.com/leifmadsen/ansible-role-elasticsearch.git
+  version: master
+  name: leifmadsen.elasticsearch
+- src: https://github.com/leifmadsen/ansible-role-logstash.git
+  version: master
+  name: leifmadsen.logstash
+- src: leifmadsen.kibana-4

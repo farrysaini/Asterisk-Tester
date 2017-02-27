@@ -11,6 +11,7 @@ sipp_scenario_file: ''
 sipp_extra_args: ''
 sipp_stats_dump_freq: 10
 sipp_rate_increase: 10
+sipp_test_time: 200
 sipp_rate_max: 200
 sipp_service: no
 sipp_local_ip: "{{ ansible_default_ipv4.address }}"

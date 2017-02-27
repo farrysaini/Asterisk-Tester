@@ -6,10 +6,21 @@
 
 # Must use force SIPP won't exit otherwise
 - name: Kill all the SIPP instances on machine
+  tags: 
+    - stopsipp
   ignore_errors: true
   become: yes
   shell: >
     ps aux | kill -9 $(awk '{if($11=="sipp"){print($2)}}') 
+
+- name: Kill all the dstat instances on machine
+  tags: 
+    - stopsipp
+  ignore_errors: true
+  become: yes
+  shell: >
+    ps aux | kill -9 $(awk '{if($11=="dstat"){print($2)}}') 
+
 
 - name: Delete the SIPP directory
   file: >

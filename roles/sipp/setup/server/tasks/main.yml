@@ -9,9 +9,19 @@
       dest="{{ sipp_remote_dir }}/sipp.sh"
       mode=750
 
+- name: Run dstat for performance logging
+  tags: 
+    - startsipp
+  shell: ' dstat --time --cpu --net --disk --sys --load --proc --int --udp --tcp > uas_resources.log'
+  args:
+    chdir: "{{ sipp_remote_dir }}"
+  async: "{{ sipp_test_time }}"
+  poll: 0 
+
 - name: Run SIPP server script
+  tags: startsipp
   command: '{{ sipp_remote_dir}}/sipp.sh'
   args:
     chdir: "{{ sipp_remote_dir }}"
-  async: 3600
+  async: "{{ sipp_test_time }}"
   poll: 0

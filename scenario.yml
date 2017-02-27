@@ -33,6 +33,27 @@
   roles:
       - libvirt/setup
 
+- name: Install filebeat on all machines
+  hosts: all
+  become: yes
+  gather_facts: yes
+  tags:
+      - setup
+      - provisionfb
+  roles:
+    -  ansible-role-filebeat
+
+- name: Install elasticsearch, logstash and kibana on localhost
+  hosts: localhost
+  become: yes
+  gather_facts: yes
+  tags:
+      - setup
+      - provisionelk
+  roles:
+    - ansible-role-elasticsearch
+    - ansible-role-logstash
+
 - name: Provision sipp servers
   gather_facts: yes
   hosts: sipp_server
